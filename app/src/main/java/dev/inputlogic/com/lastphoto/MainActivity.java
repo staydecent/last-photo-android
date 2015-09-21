@@ -3,6 +3,7 @@ package dev.inputlogic.com.lastphoto;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,18 +14,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 
 public class MainActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final String IMAGE_FILE_NAME = "test.png";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        showButton();
+        loadImage();
     }
 
     @Override
@@ -71,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private void saveImage(Bitmap bm) {
         Context ctx = getBaseContext();
         File dir = ctx.getDir("img", Context.MODE_PRIVATE);
-        File mPath = new File(dir, "test.png");
+        File mPath = new File(dir, IMAGE_FILE_NAME);
 
         FileOutputStream fos;
         try {
@@ -80,6 +84,21 @@ public class MainActivity extends AppCompatActivity {
             fos.close();
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private void loadImage() {
+        try {
+            Context ctx = getBaseContext();
+            File dir = ctx.getDir("img", Context.MODE_PRIVATE);
+            File mPath = new File(dir, IMAGE_FILE_NAME);
+            Bitmap mBitmap = BitmapFactory.decodeStream(new FileInputStream(mPath));
+            ImageView mImageView = (ImageView) findViewById(R.id.last_photo_thumb);
+            mImageView.setImageBitmap(mBitmap);
+            hideButton();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            showButton();
         }
     }
 
